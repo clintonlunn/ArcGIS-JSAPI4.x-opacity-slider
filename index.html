@@ -47,7 +47,7 @@
                 precision: 0,
                 values: [0],
                 draggableSegmentsEnabled: false,
-                rangeLabelsVisible: true
+
             });
 
             // Renders three groups of ticks. The first is a basic set
@@ -59,26 +59,29 @@
                 // values: 25
             }, {
                 mode: "percent",
-                values: [25, 50, 75],
+                values: [0, 25, 50, 75, 100],
                 labelsVisible: true,
                 tickCreatedFunction: function (initialValue, tickElement, labelElement) {
-                    console.log({
-                        initialValue,
-                        tickElement,
-                        labelElement
-                    });
-                    labelElement['innerHTML'] = 'aloe'
-                    // tickElement.classList.add("mediumTicks");
-                    // labelElement.classList.add("mediumLabels");
+                    initialValue === 0 ?
+                        labelElement['innerText'] = 'water' :
+                        initialValue === 25 ?
+                        labelElement['innerText'] = 'blotter' :
+                        initialValue === 50 ?
+                        labelElement['innerText'] = 'streets' :
+                        initialValue === 75 ?
+                        labelElement['innerText'] = 'navcharts' :
+                        initialValue === 100 ?
+                        labelElement['innerText'] = 'another' :
+                        ''
                 }
             }];
 
-            slider.labelFormatFunction = function (value, type) {
-                return value === 0 ? value = 'topo' :
-                    value === 100 ? value = 'imagery' :
-                    value
-                // return (type === "value" && value === 0) ? value.toFixed(0) : value;
-            }
+            // slider.labelFormatFunction = function (value, type) {
+            //     return value === 0 ? value = 'topo' :
+            //         value === 100 ? value = 'imagery' :
+            //         value
+            //     // return (type === "value" && value === 0) ? value.toFixed(0) : value;
+            // }
 
             //Slider Logic
             function changeOpacity(op) {
@@ -109,13 +112,19 @@
         }
 
         #menu {
-            padding: 1em;
-            width: 250px;
+            padding: 2em;
+            width: 400px;
         }
 
         #waveSlider {
             height: 50px;
             margin-top: 2em;
+            /* padding: 6px */
+        }
+
+        .slider {
+            width: 96%;
+            text-align: center;
         }
     </style>
 </head>
@@ -124,7 +133,7 @@
     <div id="viewDiv"></div>
     <div id="menu" class="esri-widget">
         <h4>Layer Opacity</h4>
-        <div id="waveSlider"></div>
+        <div class="slider" id="waveSlider"></div>
 
     </div>
 </body>
