@@ -25,17 +25,25 @@
                 map: map
             });
 
-            const imageryBasemap = new TileLayer({
-                url: "https://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer",
-                opacity: 1
+            const streetsBasemap = new TileLayer({
+                url: "https://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer"
             });
-            map.add(imageryBasemap);
+
+            const terrainMap = new TileLayer({
+                url: "https://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer"
+            });
+
+            const imageryBasemap = new TileLayer({
+                url: "https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer"
+            });
 
             const topoBasemap = new TileLayer({
-                url: "https://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer",
-                opacity: 0
+                url: "https://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer"
             });
-            map.add(topoBasemap);
+
+            const shadeReliefBasemap = new TileLayer({
+                url: "https://services.arcgisonline.com/arcgis/rest/services/World_Shaded_Relief/MapServer"
+            })
 
             view.ui.add("menu", "top-right");
 
@@ -47,55 +55,73 @@
                 precision: 0,
                 values: [0],
                 draggableSegmentsEnabled: false,
-
             });
 
-            // Renders three groups of ticks. The first is a basic set
-            // of 25 ticks. The second places 4 ticks and adds custom
-            // CSS classes to modify their styling. The third adds
-            // a click event handler to the tick labels.
+            // rendering the groups of ticks and 
+            // giving them names according to their layers
             slider.tickConfigs = [{
-                // mode: "count",
-                // values: 25
-            }, {
                 mode: "percent",
                 values: [0, 25, 50, 75, 100],
                 labelsVisible: true,
                 tickCreatedFunction: function (initialValue, tickElement, labelElement) {
                     initialValue === 0 ?
-                        labelElement['innerText'] = 'water' :
-                        initialValue === 25 ?
-                        labelElement['innerText'] = 'blotter' :
-                        initialValue === 50 ?
                         labelElement['innerText'] = 'streets' :
+                        initialValue === 25 ?
+                        labelElement['innerText'] = 'terrain' :
+                        initialValue === 50 ?
+                        labelElement['innerText'] = 'imagery' :
                         initialValue === 75 ?
-                        labelElement['innerText'] = 'navcharts' :
+                        labelElement['innerText'] = 'topographic' :
                         initialValue === 100 ?
-                        labelElement['innerText'] = 'another' :
+                        labelElement['innerText'] = 'shade' :
                         ''
                 }
             }];
 
-            // slider.labelFormatFunction = function (value, type) {
-            //     return value === 0 ? value = 'topo' :
-            //         value === 100 ? value = 'imagery' :
-            //         value
-            //     // return (type === "value" && value === 0) ? value.toFixed(0) : value;
+            // //Slider Logic
+            // function changeOpacity(op) {
+            //     var newOp = op / 100;
+            //     imageryBasemap.opacity = (1.0 - newOp);
+            //     topoBasemap.opacity = (newOp);
             // }
 
+
             //Slider Logic
-            function changeOpacity(op) {
-                var newOp = op / 100;
-                imageryBasemap.opacity = (1.0 - newOp);
-                topoBasemap.opacity = (newOp);
+            function changeOpacity(layer1, layer2, floorVal, ceilVal) {
+                console.log({
+                    floorVal,
+                    ceilVal
+                });
+                // var newOp = op / 100;
+                // imageryBasemap.opacity = (1.0 - newOp);
+                // topoBasemap.opacity = (newOp);
+
+                // const layer1Opacity = '';
+                // const layer2Opacity = '';
+
+                // layer1.opacity = '';
+                // layer2.opacity = '';
+
+
+            }
+
+            function findFloorAndCeiling(value) {
+                console.log(value)
+                return (0 < value < 25) ?
+                    changeOpacity(streetsBasemap, terrainMap, 0, 25) :
+                    (25 < value < 50) ?
+                    changeOpacity(terrainMap, imageryBasemap, 25, 50) :
+                    (50 < value < 75) ?
+                    changeOpacity(imageryBasemap, topoBasemap, 50, 75) :
+                    (75 < value < 100) ?
+                    changeOpacity(topoBasemap, shadeReliefBasemap, 75, 100) :
+                    ''
             }
 
             slider.on("thumb-drag", function (event) {
                 const value = parseInt(event.value);
-                console.log(value);
-
-                changeOpacity(value);
-
+                // console.log(value);
+                findFloorAndCeiling(value);
             });
 
 
@@ -119,7 +145,6 @@
         #waveSlider {
             height: 50px;
             margin-top: 2em;
-            /* padding: 6px */
         }
 
         .slider {
