@@ -37,13 +37,12 @@
             });
 
             var map = new Map({
-                // basemap: "streets"
+                layers: [streetsBasemap, terrainMap, imageryBasemap, topoBasemap]
             });
 
             const view = new MapView({
                 container: "viewDiv",
                 map: map,
-                layers: [streetsBasemap, terrainMap, imageryBasemap, topoBasemap]
             });
 
             view.ui.add("menu", "top-right");
@@ -87,15 +86,42 @@
             // }
 
 
+            // async function showAvatar() {
+
+            // // read our JSON
+            // let response = await fetch('/article/promise-chaining/user.json');
+            // let user = await response.json();
+
+            // // read github user
+            // let githubResponse = await fetch(`https://api.github.com/users/${user.name}`);
+            // let githubUser = await githubResponse.json();
+
+            // // show the avatar
+            // let img = document.createElement('img');
+            // img.src = githubUser.avatar_url;
+            // img.className = "promise-avatar-example";
+            // document.body.append(img);
+
+            // // wait 3 seconds
+            // await new Promise((resolve, reject) => setTimeout(resolve, 3000));
+
+            // img.remove();
+
+            // return githubUser;
+            // }
+
+            // showAvatar();
+
             // find layers that are not our target layers
             function findLayersToRemove(layer1, layer2) {
                 const layer1Title = layer1.title;
                 const layer2Title = layer2.title;
 
-
-                console.log(map.allLayers.find(() => {
+                const layersToFilterOut = map.allLayers.filter(function (layer) {
                     return layer.title !== layer1Title && layer.title !== layer2Title;
-                }));
+                });
+
+                return map.removeMany(layersToFilterOut);
             }
 
             //Slider Logic
@@ -107,7 +133,7 @@
                 // dynamically add and remove layers
                 if (floorVal === 0 & ceilVal === 25) {
                     console.log('1');
-                    findLayersToRemove(layer1, layer2);
+                    findLayersToRemove(layer1, layer2)
                     // map.addMany([])
                     // map.removeMany([])
                 } else if (floorVal === 25 & ceilVal === 50) {
@@ -161,6 +187,13 @@
                 findFloorAndCeiling(value);
             });
 
+            view.when(function () {
+                    findFloorAndCeiling(0)
+                },
+                function (error) {
+                    // Use the errback function to handle when the view doesn't load properly
+                    console.log("The view's resources failed to load: ", error);
+                });
 
         });
     </script>
