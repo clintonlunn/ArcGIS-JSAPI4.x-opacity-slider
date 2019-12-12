@@ -16,15 +16,6 @@
             "esri/widgets/Slider"
         ], function (Map, MapView, FeatureLayer, TileLayer, Slider) {
 
-            var map = new Map({
-                // basemap: "streets"
-            });
-
-            const view = new MapView({
-                container: "viewDiv",
-                map: map
-            });
-
             const streetsBasemap = new TileLayer({
                 url: "https://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer"
             });
@@ -43,7 +34,17 @@
 
             const shadeReliefBasemap = new TileLayer({
                 url: "https://services.arcgisonline.com/arcgis/rest/services/World_Shaded_Relief/MapServer"
-            })
+            });
+
+            var map = new Map({
+                // basemap: "streets"
+            });
+
+            const view = new MapView({
+                container: "viewDiv",
+                map: map,
+                layers: [streetsBasemap, terrainMap, imageryBasemap, topoBasemap]
+            });
 
             view.ui.add("menu", "top-right");
 
@@ -86,12 +87,48 @@
             // }
 
 
+            // find layers that are not our target layers
+            function findLayersToRemove(layer1, layer2) {
+                const layer1Title = layer1.title;
+                const layer2Title = layer2.title;
+
+
+                console.log(map.allLayers.find(() => {
+                    return layer.title !== layer1Title && layer.title !== layer2Title;
+                }));
+            }
+
             //Slider Logic
             function changeOpacity(layer1, layer2, floorVal, ceilVal) {
                 console.log({
                     floorVal,
                     ceilVal
                 });
+                // dynamically add and remove layers
+                if (floorVal === 0 & ceilVal === 25) {
+                    console.log('1');
+                    findLayersToRemove(layer1, layer2);
+                    // map.addMany([])
+                    // map.removeMany([])
+                } else if (floorVal === 25 & ceilVal === 50) {
+                    console.log('2');
+                    findLayersToRemove(layer1, layer2);
+                    // map.addMany([])
+                    // map.removeMany([])
+                } else if (floorVal === 50 & ceilVal === 75) {
+                    console.log('3');
+                    findLayersToRemove(layer1, layer2);
+                    // map.addMany([])
+                    // map.removeMany([])
+                } else if (floorVal === 75 & ceilVal === 100) {
+                    console.log('4');
+                    findLayersToRemove(layer1, layer2);
+                    // map.addMany([])
+                    // map.removeMany([])
+                } else {
+                    ''
+                }
+
                 // var newOp = op / 100;
                 // imageryBasemap.opacity = (1.0 - newOp);
                 // topoBasemap.opacity = (newOp);
@@ -106,21 +143,21 @@
             }
 
             function findFloorAndCeiling(value) {
-                console.log(value)
-                return (0 < value < 25) ?
-                    changeOpacity(streetsBasemap, terrainMap, 0, 25) :
-                    (25 < value < 50) ?
+                (0 < value && value < 25) ?
+                changeOpacity(streetsBasemap, terrainMap, 0, 25):
+                    (25 <= value && value < 50) ?
                     changeOpacity(terrainMap, imageryBasemap, 25, 50) :
-                    (50 < value < 75) ?
+                    (50 <= value && value < 75) ?
                     changeOpacity(imageryBasemap, topoBasemap, 50, 75) :
-                    (75 < value < 100) ?
+                    (75 <= value && value < 100) ?
                     changeOpacity(topoBasemap, shadeReliefBasemap, 75, 100) :
                     ''
             }
 
             slider.on("thumb-drag", function (event) {
                 const value = parseInt(event.value);
-                // console.log(value);
+                console.log(value);
+
                 findFloorAndCeiling(value);
             });
 
