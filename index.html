@@ -85,35 +85,8 @@
             //     topoBasemap.opacity = (newOp);
             // }
 
-
-            // async function showAvatar() {
-
-            // // read our JSON
-            // let response = await fetch('/article/promise-chaining/user.json');
-            // let user = await response.json();
-
-            // // read github user
-            // let githubResponse = await fetch(`https://api.github.com/users/${user.name}`);
-            // let githubUser = await githubResponse.json();
-
-            // // show the avatar
-            // let img = document.createElement('img');
-            // img.src = githubUser.avatar_url;
-            // img.className = "promise-avatar-example";
-            // document.body.append(img);
-
-            // // wait 3 seconds
-            // await new Promise((resolve, reject) => setTimeout(resolve, 3000));
-
-            // img.remove();
-
-            // return githubUser;
-            // }
-
-            // showAvatar();
-
             // find layers that are not our target layers
-            function findLayersToRemove(layer1, layer2) {
+            function findAndRemoveInactiveLayers(layer1, layer2) {
                 const layer1Title = layer1.title;
                 const layer2Title = layer2.title;
 
@@ -122,6 +95,18 @@
                 });
 
                 return map.removeMany(layersToFilterOut);
+            }
+
+            // check or add active layers
+            function checkOrAddActiveLayers(layer1, layer2) {
+                const layer1Title = layer1.title;
+                const layer2Title = layer2.title;
+
+                // const layersToFilterOut = map.allLayers.filter(function (layer) {
+                //     return layer.title !== layer1Title && layer.title !== layer2Title;
+                // });
+                map.removeAll();
+                map.addMany([layer1, layer2]);
             }
 
             //Slider Logic
@@ -133,24 +118,20 @@
                 // dynamically add and remove layers
                 if (floorVal === 0 & ceilVal === 25) {
                     console.log('1');
-                    findLayersToRemove(layer1, layer2)
-                    // map.addMany([])
-                    // map.removeMany([])
+                    findAndRemoveInactiveLayers(layer1, layer2)
+                    checkOrAddActiveLayers(layer1, layer2);
                 } else if (floorVal === 25 & ceilVal === 50) {
                     console.log('2');
-                    findLayersToRemove(layer1, layer2);
-                    // map.addMany([])
-                    // map.removeMany([])
+                    findAndRemoveInactiveLayers(layer1, layer2);
+                    checkOrAddActiveLayers(layer1, layer2);
                 } else if (floorVal === 50 & ceilVal === 75) {
                     console.log('3');
-                    findLayersToRemove(layer1, layer2);
-                    // map.addMany([])
-                    // map.removeMany([])
+                    findAndRemoveInactiveLayers(layer1, layer2);
+                    checkOrAddActiveLayers(layer1, layer2);
                 } else if (floorVal === 75 & ceilVal === 100) {
                     console.log('4');
-                    findLayersToRemove(layer1, layer2);
-                    // map.addMany([])
-                    // map.removeMany([])
+                    findAndRemoveInactiveLayers(layer1, layer2);
+                    checkOrAddActiveLayers(layer1, layer2);
                 } else {
                     ''
                 }
