@@ -36,9 +36,7 @@
                 url: "https://services.arcgisonline.com/arcgis/rest/services/World_Shaded_Relief/MapServer"
             });
 
-            var map = new Map({
-                // layers: [streetsBasemap, terrainMap, imageryBasemap, topoBasemap]
-            });
+            var map = new Map({});
 
             const view = new MapView({
                 container: "viewDiv",
@@ -78,13 +76,6 @@
                 }
             }];
 
-            // //Slider Logic
-            // function changeOpacity(op) {
-            //     var newOp = op / 100;
-            //     imageryBasemap.opacity = (1.0 - newOp);
-            //     topoBasemap.opacity = (newOp);
-            // }
-
             // find layers that are not our target layers
             function findAndRemoveInactiveLayers(layer1, layer2) {
                 const layer1Title = layer1.title;
@@ -105,6 +96,7 @@
                 map.addMany([layer1, layer2]);
             }
 
+            // need to calculate based on distance from the low value and high value 
             function calculateOpacity(layer1, layer2, lowValue, highValue, currentValue) {
                 const layer1Opacity = 1 - (((currentValue - lowValue) * 4) / 100);
                 const layer2Opacity = 1 - (((highValue - currentValue) * 4) / 100);
@@ -123,10 +115,6 @@
 
             //Slider Logic
             function changeOpacity(layer1, layer2, floorVal, ceilVal, currentValue) {
-                console.log({
-                    floorVal,
-                    ceilVal
-                });
                 // dynamically add and remove layers
                 if (floorVal === 0 & ceilVal === 25) {
                     findAndRemoveInactiveLayers(layer1, layer2)
