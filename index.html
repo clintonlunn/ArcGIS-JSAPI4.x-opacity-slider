@@ -37,7 +37,7 @@
             });
 
             var map = new Map({
-                layers: [streetsBasemap, terrainMap, imageryBasemap, topoBasemap]
+                // layers: [streetsBasemap, terrainMap, imageryBasemap, topoBasemap]
             });
 
             const view = new MapView({
@@ -139,18 +139,11 @@
                 // var newOp = op / 100;
                 // imageryBasemap.opacity = (1.0 - newOp);
                 // topoBasemap.opacity = (newOp);
-
-                // const layer1Opacity = '';
-                // const layer2Opacity = '';
-
-                // layer1.opacity = '';
-                // layer2.opacity = '';
-
-
             }
 
             function findFloorAndCeiling(value) {
-                (0 < value && value < 25) ?
+                console.log('findfloorandceiling');
+                (0 <= value && value < 25) ?
                 changeOpacity(streetsBasemap, terrainMap, 0, 25):
                     (25 <= value && value < 50) ?
                     changeOpacity(terrainMap, imageryBasemap, 25, 50) :
@@ -168,7 +161,8 @@
                 findFloorAndCeiling(value);
             });
 
-            view.when(function () {
+
+            window.addEventListener('load', function () {
                     findFloorAndCeiling(0)
                 },
                 function (error) {
