@@ -101,57 +101,63 @@
             function checkOrAddActiveLayers(layer1, layer2) {
                 const layer1Title = layer1.title;
                 const layer2Title = layer2.title;
-
-                // const layersToFilterOut = map.allLayers.filter(function (layer) {
-                //     return layer.title !== layer1Title && layer.title !== layer2Title;
-                // });
                 map.removeAll();
                 map.addMany([layer1, layer2]);
             }
 
+            function calculateOpacity(layer1, layer2, lowValue, highValue, currentValue) {
+                const layer1Opacity = 1 - (((currentValue - lowValue) * 4) / 100);
+                const layer2Opacity = 1 - (((highValue - currentValue) * 4) / 100);
+
+                console.log({
+                    lowValue,
+                    highValue,
+                    layer1Opacity,
+                    layer2Opacity,
+                    currentValue
+                });
+
+                layer1.opacity = layer1Opacity;
+                layer2.opacity = layer2Opacity;
+            }
+
             //Slider Logic
-            function changeOpacity(layer1, layer2, floorVal, ceilVal) {
+            function changeOpacity(layer1, layer2, floorVal, ceilVal, currentValue) {
                 console.log({
                     floorVal,
                     ceilVal
                 });
                 // dynamically add and remove layers
                 if (floorVal === 0 & ceilVal === 25) {
-                    console.log('1');
                     findAndRemoveInactiveLayers(layer1, layer2)
                     checkOrAddActiveLayers(layer1, layer2);
+                    calculateOpacity(layer1, layer2, floorVal, ceilVal, currentValue);
                 } else if (floorVal === 25 & ceilVal === 50) {
-                    console.log('2');
                     findAndRemoveInactiveLayers(layer1, layer2);
                     checkOrAddActiveLayers(layer1, layer2);
+                    calculateOpacity(layer1, layer2, floorVal, ceilVal, currentValue);
                 } else if (floorVal === 50 & ceilVal === 75) {
-                    console.log('3');
                     findAndRemoveInactiveLayers(layer1, layer2);
                     checkOrAddActiveLayers(layer1, layer2);
+                    calculateOpacity(layer1, layer2, floorVal, ceilVal, currentValue);
                 } else if (floorVal === 75 & ceilVal === 100) {
-                    console.log('4');
                     findAndRemoveInactiveLayers(layer1, layer2);
                     checkOrAddActiveLayers(layer1, layer2);
+                    calculateOpacity(layer1, layer2, floorVal, ceilVal, currentValue);
                 } else {
                     ''
                 }
-                // test comment
-
-                // var newOp = op / 100;
-                // imageryBasemap.opacity = (1.0 - newOp);
-                // topoBasemap.opacity = (newOp);
             }
 
             function findFloorAndCeiling(value) {
-                console.log('findfloorandceiling');
                 (0 <= value && value < 25) ?
-                changeOpacity(streetsBasemap, terrainMap, 0, 25):
+                changeOpacity(streetsBasemap, terrainMap, 0, 25, value):
                     (25 <= value && value < 50) ?
-                    changeOpacity(terrainMap, imageryBasemap, 25, 50) :
+                    changeOpacity(terrainMap, imageryBasemap, 25, 50, value) :
                     (50 <= value && value < 75) ?
-                    changeOpacity(imageryBasemap, topoBasemap, 50, 75) :
+                    changeOpacity(imageryBasemap, topoBasemap, 50, 75, value) :
                     (75 <= value && value < 100) ?
-                    changeOpacity(topoBasemap, shadeReliefBasemap, 75, 100) :
+                    changeOpacity(topoBasemap, shadeReliefBasemap, 75, 100, value) :
                     ''
             }
 
