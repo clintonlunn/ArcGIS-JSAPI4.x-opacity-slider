@@ -6,7 +6,7 @@
     <title>Basemap Opacity Slider: Proof of Concept</title>
     <link rel="stylesheet" href="https://js.arcgis.com/4.13/esri/themes/light/main.css" />
     <script src="https://js.arcgis.com/4.13/"></script>
-
+    </script>
     <script>
         require([
             "esri/Map",
@@ -43,6 +43,74 @@
                 map: map,
             });
 
+            // Logic for the basemapcounter
+            const basemapAmtInput = document.getElementById('basemapAmtInput');
+            const basemapIncrementer = document.getElementById('plusBtn');
+            const basemapDecrementer = document.getElementById('minusBtn');
+            // define event because of the increment/decrement counter event dispatch limitation
+            var changeEvent = new Event('change');
+
+
+            function changeTexboxAmt() {}
+            basemapAmtInput.addEventListener('change', function () {
+                console.log(basemapAmtInput.value);
+                changeDropdownsAmt();
+            });
+
+            basemapIncrementer.addEventListener('click', function () {
+                console.log('click up');
+                const textboxVal = parseInt(basemapAmtInput.value)
+                basemapAmtInput.value = textboxVal + 1;
+                basemapAmtInput.dispatchEvent(changeEvent);
+                changeDropdownsAmt(1);
+            })
+
+            basemapDecrementer.addEventListener('click', function () {
+                console.log('click up');
+                const textboxVal = parseInt(basemapAmtInput.value);
+                basemapAmtInput.value = textboxVal - 1;
+                basemapAmtInput.dispatchEvent(changeEvent);
+                changeDropdownsAmt(1);
+            })
+
+            // Logic for the dropowns
+            // We want to give the user a list of basemaps to choose from
+            // After the dropdown is chosen it will populate the tick
+            function changeDropdownsAmt(textboxAmt) {
+                const childrenLength = document.getElementById('basemapDropdownHolder').children.length
+                const basemapDiv = document.getElementById('basemapDropdownHolder');
+                console.log(childrenLength);
+
+                // div.createElement('select'); // how to create select
+                // remove all dropdowns if div is not empty
+                if (childrenLength > 0) { // has child nodes
+                    if (childrenLength < textboxAmt || childrenLength === 0) {
+                        // increase the textbox abount
+                        const amountDifference = textboxAmt - childrenLength;
+                        for (let i = 0; i < amountDifference; i++) {
+                            const newSelect = document.createElement('select');
+                            basemapDiv.appendChild(newSelect);
+                        }
+                    } else {
+                        // decrease the textbox abount
+                        const amountDifference = Math.abs(textboxAmt - childrenLength);
+                        for (let i = 0; i < amountDifference; i++) {
+                            basemapDiv.removeChild(basemapDiv.lastChild);
+                        }
+                    }
+                    // add or remove based on existing amount
+                } else { // no child nodes, div is empty
+
+                }
+
+
+            }
+
+            function alterTick(dropdownSelection) {
+
+            }
+
+            // Slider logic begins
             view.ui.add("menu", "top-right");
 
             const slider = new Slider({
@@ -198,7 +266,18 @@
     <div id="viewDiv"></div>
     <div id="menu" class="esri-widget">
         <h4>Layer Opacity</h4>
-        <div class="slider" id="waveSlider"></div>
+        <div>
+            <p>How many basemaps?</p>
+            <button class="action-button esri-icon-plus" id="minusBtn" type="button"
+                title="Decrement Basemaps"></button>
+            <input type="number" id="basemapAmtInput" value=0></input>
+            <button class="action-button esri-icon-minus" id="plusBtn" type="button"
+                title="Increment Basemaps"></button>
+        </div>
+        <!-- holder for dynamically generated dropdowns -->
+        <div id="basemapDropdownHolder"></div>
+        <div class="slider" id="waveSlider">
+        </div>
 
     </div>
 </body>
