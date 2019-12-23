@@ -54,7 +54,7 @@
             function changeTexboxAmt() {}
             basemapAmtInput.addEventListener('change', function () {
                 console.log(basemapAmtInput.value);
-                changeDropdownsAmt();
+                changeDropdownsAmt(basemapAmtInput.value);
             });
 
             basemapIncrementer.addEventListener('click', function () {
@@ -62,7 +62,7 @@
                 const textboxVal = parseInt(basemapAmtInput.value)
                 basemapAmtInput.value = textboxVal + 1;
                 basemapAmtInput.dispatchEvent(changeEvent);
-                changeDropdownsAmt(1);
+                changeDropdownsAmt(basemapAmtInput.value);
             })
 
             basemapDecrementer.addEventListener('click', function () {
@@ -70,7 +70,7 @@
                 const textboxVal = parseInt(basemapAmtInput.value);
                 basemapAmtInput.value = textboxVal - 1;
                 basemapAmtInput.dispatchEvent(changeEvent);
-                changeDropdownsAmt(1);
+                changeDropdownsAmt(basemapAmtInput.value);
             })
 
             // Logic for the dropowns
@@ -79,6 +79,10 @@
             function changeDropdownsAmt(textboxAmt) {
                 const childrenLength = document.getElementById('basemapDropdownHolder').children.length
                 const basemapDiv = document.getElementById('basemapDropdownHolder');
+                console.log({
+                    childrenLength,
+                    textboxAmt
+                });
 
                 // div.createElement('select'); // how to create select
                 // remove all dropdowns if div is not empty
@@ -88,6 +92,11 @@
                     if (childrenLength < textboxAmt) {
                         // increase the textbox abount
                         const amountDifference = textboxAmt - childrenLength;
+                        console.log({
+                            amountDifference,
+                            childrenLength
+                        });
+
                         for (let i = 0; i < amountDifference; i++) {
                             console.log('arrived here');
 
