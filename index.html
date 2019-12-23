@@ -79,15 +79,18 @@
             function changeDropdownsAmt(textboxAmt) {
                 const childrenLength = document.getElementById('basemapDropdownHolder').children.length
                 const basemapDiv = document.getElementById('basemapDropdownHolder');
-                console.log(childrenLength);
 
                 // div.createElement('select'); // how to create select
                 // remove all dropdowns if div is not empty
                 if (childrenLength > 0) { // has child nodes
-                    if (childrenLength < textboxAmt || childrenLength === 0) {
+                    console.log('childrenlength greater than 0');
+
+                    if (childrenLength < textboxAmt) {
                         // increase the textbox abount
                         const amountDifference = textboxAmt - childrenLength;
                         for (let i = 0; i < amountDifference; i++) {
+                            console.log('arrived here');
+
                             const newSelect = document.createElement('select');
                             basemapDiv.appendChild(newSelect);
                         }
@@ -100,7 +103,8 @@
                     }
                     // add or remove based on existing amount
                 } else { // no child nodes, div is empty
-
+                    const newSelect = document.createElement('select');
+                    basemapDiv.appendChild(newSelect);
                 }
 
 
@@ -268,11 +272,10 @@
         <h4>Layer Opacity</h4>
         <div>
             <p>How many basemaps?</p>
-            <button class="action-button esri-icon-plus" id="minusBtn" type="button"
+            <button class="action-button esri-icon-minus" id="minusBtn" type="button"
                 title="Decrement Basemaps"></button>
             <input type="number" id="basemapAmtInput" value=0></input>
-            <button class="action-button esri-icon-minus" id="plusBtn" type="button"
-                title="Increment Basemaps"></button>
+            <button class="action-button esri-icon-plus" id="plusBtn" type="button" title="Increment Basemaps"></button>
         </div>
         <!-- holder for dynamically generated dropdowns -->
         <div id="basemapDropdownHolder"></div>
