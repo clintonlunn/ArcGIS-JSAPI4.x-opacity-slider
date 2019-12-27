@@ -105,10 +105,19 @@
                         }
                     } else {
                         // decrease the textbox abount
-                        const amountDifference = Math.abs(textboxAmt - childrenLength);
-                        for (let i = 0; i < amountDifference; i++) {
-                            basemapDiv.removeChild(basemapDiv.lastChild);
+                        if (textboxAmt >= 1) {
+                            const amountDifference = Math.abs(textboxAmt - childrenLength);
+                            for (let i = 0; i < amountDifference; i++) {
+                                basemapDiv.removeChild(basemapDiv.lastChild);
+                            }
+                        } else {
+                            console.log('text amount is 0');
+                            if (basemapDiv.parentNode) {
+                                basemapDiv.parentNode.removeChild(basemapDiv);
+                            }
+                            // basemapDiv.removeChild(basemapDiv.firstChild);
                         }
+
                     }
                     // add or remove based on existing amount
                 } else { // no child nodes, div is empty
