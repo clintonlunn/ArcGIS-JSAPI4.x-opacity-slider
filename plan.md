@@ -1,8 +1,11 @@
 #plan
 
-logic for slider
+[x] logic for slider
 
-figure distance between ticks, agnostic of actual value
+[x] figure distance between ticks, agnostic of actual value
 
-anonomyze layers
+[] anonomyze layers
+
+
+
 

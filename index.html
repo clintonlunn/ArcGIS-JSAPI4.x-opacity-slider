@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8" />
     <title>Basemap Opacity Slider: Proof of Concept</title>
-    <link rel="stylesheet" href="https://js.arcgis.com/4.13/esri/themes/light/main.css" />
-    <script src="https://js.arcgis.com/4.13/"></script>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.17/esri/themes/light/main.css" />
+    <script src="https://js.arcgis.com/4.17/"></script>
     </script>
     <script>
         require([
@@ -43,6 +43,8 @@
                 map: map,
             });
 
+            const basemapOptions = ["streets", "terrain", "imagery", "topo", "shadeRelief"];
+            let basemapCurrentSelectionList = [];
             // Logic for the basemapcounter
             const basemapAmtInput = document.getElementById('basemapAmtInput');
             const basemapIncrementer = document.getElementById('plusBtn');
@@ -66,63 +68,81 @@
             })
 
             basemapDecrementer.addEventListener('click', function () {
-                console.log('click up');
+                console.log('click down');
                 const textboxVal = parseInt(basemapAmtInput.value);
-                basemapAmtInput.value = textboxVal - 1;
-                basemapAmtInput.dispatchEvent(changeEvent);
-                changeDropdownsAmt(basemapAmtInput.value);
+                if (textboxVal - 1 >= 0) {
+                    basemapAmtInput.value = textboxVal - 1;
+                    basemapAmtInput.dispatchEvent(changeEvent);
+                    changeDropdownsAmt(basemapAmtInput.value);
+                } else {
+                    // don't allow values < 1
+                }
+
             })
 
             // Logic for the dropowns
             // We want to give the user a list of basemaps to choose from
             // After the dropdown is chosen it will populate the tick
             function changeDropdownsAmt(textboxAmt) {
-                const childrenLength = document.getElementById('basemapDropdownHolder').children.length
-                const basemapDiv = document.getElementById('basemapDropdownHolder');
-                console.log({
-                    childrenLength,
-                    textboxAmt
-                });
 
-                // div.createElement('select'); // how to create select
-                // remove all dropdowns if div is not empty
-                if (childrenLength > 0) { // has child nodes
-                    console.log('childrenlength greater than 0');
+                console.log(document.getElementById('basemapDropdownHolder').hasChildNodes());
 
-                    if (childrenLength < textboxAmt) {
-                        // increase the textbox abount
-                        const amountDifference = textboxAmt - childrenLength;
-                        console.log({
-                            amountDifference,
-                            childrenLength
-                        });
+                if (document.getElementById('basemapDropdownHolder').hasChildNodes()) {
+                    const childrenLength = document.getElementById('basemapDropdownHolder').children.length
+                    const basemapDiv = document.getElementById('basemapDropdownHolder');
+                    console.log({
+                        childrenLength,
+                        textboxAmt
+                    });
 
-                        for (let i = 0; i < amountDifference; i++) {
-                            console.log('arrived here');
 
-                            const newSelect = document.createElement('select');
-                            basemapDiv.appendChild(newSelect);
-                        }
-                    } else {
-                        // decrease the textbox abount
-                        if (textboxAmt >= 1) {
-                            const amountDifference = Math.abs(textboxAmt - childrenLength);
+
+                    // div.createElement('select'); // how to create select
+                    // remove all dropdowns if div is not empty
+                    if (childrenLength > 0) { // has child nodes
+                        console.log('childrenlength greater than 0');
+
+                        if (childrenLength < textboxAmt) {
+                            // increase the textbox abount
+                            const amountDifference = textboxAmt - childrenLength;
+                            console.log({
+                                amountDifference,
+                                childrenLength
+                            });
+
                             for (let i = 0; i < amountDifference; i++) {
-                                basemapDiv.removeChild(basemapDiv.lastChild);
+                                console.log('arrived here');
+                                const newParagraph = document.createElement('p');
+                                const newSelect = document.createElement('select');
+                                basemapDiv.appendChild(newParagraph);
+                                newParagraph.appendChild(newSelect);
                             }
                         } else {
-                            console.log('text amount is 0');
-                            if (basemapDiv.parentNode) {
-                                basemapDiv.parentNode.removeChild(basemapDiv);
+                            // decrease the textbox abount
+                            if (textboxAmt >= 1) {
+                                const amountDifference = Math.abs(textboxAmt - childrenLength);
+                                for (let i = 0; i < amountDifference; i++) {
+                                    basemapDiv.removeChild(basemapDiv.lastChild);
+                                }
+                            } else {
+                                console.log('text amount is 0');
+                                if (basemapDiv.parentNode) {
+                                    basemapDiv.parentNode.removeChild(basemapDiv);
+                                }
                             }
-                            // basemapDiv.removeChild(basemapDiv.firstChild);
-                        }
 
+                        }
+                        // add or remove based on existing amount
+                    } else { // no child nodes, div is empty
+                        const newSelect = document.createElement('select');
+                        basemapDiv.appendChild(newSelect);
                     }
-                    // add or remove based on existing amount
-                } else { // no child nodes, div is empty
-                    const newSelect = document.createElement('select');
-                    basemapDiv.appendChild(newSelect);
+
+                } else {
+                    console.log("am i here?");
+                    // there are no children, need to create some
+                    div.createElement('select'); // how to create select
+
                 }
 
 
@@ -147,24 +167,49 @@
 
             // rendering the groups of ticks and 
             // giving them names according to their layers
-            slider.tickConfigs = [{
-                mode: "percent",
-                values: [0, 25, 50, 75, 100],
-                labelsVisible: true,
-                tickCreatedFunction: function (initialValue, tickElement, labelElement) {
-                    initialValue === 0 ?
-                        labelElement['innerText'] = 'streets' :
-                        initialValue === 25 ?
-                        labelElement['innerText'] = 'terrain' :
-                        initialValue === 50 ?
-                        labelElement['innerText'] = 'imagery' :
-                        initialValue === 75 ?
-                        labelElement['innerText'] = 'topographic' :
-                        initialValue === 100 ?
-                        labelElement['innerText'] = 'shade' :
-                        ''
-                }
-            }];
+
+            // load map with no ticks
+            let tickLength = 0;
+            let valuesArr = new Array(tickLength);
+            
+
+
+            // slider.tickConfigs = [{
+            //     mode: "percent",
+            //     values: [],
+            //     labelsVisible: true,
+            //     tickCreatedFunction: function (initialValue, tickElement, labelElement) {
+            //         initialValue === 0 ?
+            //             labelElement['innerText'] = 'streets' :
+            //             initialValue === 25 ?
+            //             labelElement['innerText'] = 'terrain' :
+            //             initialValue === 50 ?
+            //             labelElement['innerText'] = 'imagery' :
+            //             initialValue === 75 ?
+            //             labelElement['innerText'] = 'topographic' :
+            //             initialValue === 100 ?
+            //             labelElement['innerText'] = 'shade' :
+            //             ''
+            //     }
+            // }];
+            // slider.tickConfigs = [{
+            //     mode: "percent",
+            //     values: [0, 25, 50, 75, 100],
+            //     labelsVisible: true,
+            //     tickCreatedFunction: function (initialValue, tickElement, labelElement) {
+            //         initialValue === 0 ?
+            //             labelElement['innerText'] = 'streets' :
+            //             initialValue === 25 ?
+            //             labelElement['innerText'] = 'terrain' :
+            //             initialValue === 50 ?
+            //             labelElement['innerText'] = 'imagery' :
+            //             initialValue === 75 ?
+            //             labelElement['innerText'] = 'topographic' :
+            //             initialValue === 100 ?
+            //             labelElement['innerText'] = 'shade' :
+            //             ''
+            //     }
+            // }];
 
             // find layers that are not our target layers
             function findAndRemoveInactiveLayers(layer1, layer2) {
@@ -249,6 +294,24 @@
 
             window.addEventListener('load', function () {
                     findFloorAndCeiling(0)
+
+                    const basemapDropdownHolder = document.getElementById('basemapDropdownHolder');
+                    const childrenLength = document.getElementById('basemapDropdownHolder').children.length
+
+                    //Create and append select list
+                    var selectList = document.createElement("select");
+                    selectList.id = "basemap-" + (childrenLength+1).toString();
+                    selectList.classList.add("esri-input");
+                    selectList.classList.add("esri-select");
+                    basemapDropdownHolder.appendChild(selectList);
+
+                    //Create and append the options
+                    for (var i = 0; i < basemapOptions.length; i++) {
+                        var option = document.createElement("option");
+                        option.value = basemapOptions[i];
+                        option.text = basemapOptions[i];
+                        selectList.appendChild(option);
+                    }
                 },
                 function (error) {
                     // Use the errback function to handle when the view doesn't load properly
@@ -292,11 +355,18 @@
             <p>How many basemaps?</p>
             <button class="action-button esri-icon-minus" id="minusBtn" type="button"
                 title="Decrement Basemaps"></button>
-            <input type="number" id="basemapAmtInput" value=0></input>
+            <!-- <input type="number" id="basemapAmtInput" value=0></input> -->
+            <input type="number" id="basemapAmtInput" min="1" max="10" step="1" id="n" value=0
+                oninput="(validity.valid)||(value='');">
             <button class="action-button esri-icon-plus" id="plusBtn" type="button" title="Increment Basemaps"></button>
         </div>
         <!-- holder for dynamically generated dropdowns -->
-        <div id="basemapDropdownHolder"></div>
+        <div id="basemapDropdownHolder">
+            <!-- <select id="basemap-1" class="esri-input esri-select">
+                <option value="traditional" selected>traditional</option>
+                <option value="multi-directional">multi-directional</option>
+              </select> -->           
+        </div>
         <div class="slider" id="waveSlider">
         </div>
 
